@@ -21,6 +21,7 @@ PRODUCTION = "production"
 FLASK_ENV = "FLASK_ENV"
 ADDITIONAL_CONFIG = "ADDITIONAL_CONFIG"
 
+
 # def register_blueprints(app):
 #     app.register_blueprint(general_controller)
 #     app.register_blueprint(animator_controller)
@@ -30,7 +31,8 @@ ADDITIONAL_CONFIG = "ADDITIONAL_CONFIG"
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(host=HOST, port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
+
 
     # flask_env = os.environ.get(FLASK_ENV, DEVELOPMENT).lower()
     # config_yaml_path = os.path.join(os.getcwd(), 'config', 'app.yml')
