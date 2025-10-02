@@ -1,0 +1,20 @@
+COMMON: &common
+  DEBUG: False
+  SQLALCHEMY_TRACK_MODIFICATIONS: False
+
+development:
+  <<: *common
+  DEBUG: True
+  SQLALCHEMY_DATABASE_URI: 'mysql://root:VladPanda777@localhost:3306/SQL server'
+
+production:
+  <<: *common
+  SQLALCHEMY_DATABASE_URI: 'mysql://root:VladPanda777@localhost:3306/SQL server'
+
+ADDITIONAL_CONFIG:
+  MYSQL_USER: root
+  MYSQL_PASSWORD: 'VladPanda777'
+  MYSQL_DATABASE: SQL server
+  MYSQL_HOST: localhost
+  MYSQL_ROOT_USER: root
+  MYSQL_ROOT_PASSWORD: 'VladPanda777'
