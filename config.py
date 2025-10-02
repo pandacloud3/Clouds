@@ -11,5 +11,4 @@ class Config:
     DB_HOST = db_host
     DB_PORT = 3306
     DB_NAME = "database-1"
-    # SQLALCHEMY_D# SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    SQLALCHEMY_DATABASE_URI = "mysql://root:VladPanda777@localhost:3306/SQL server"
+    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
