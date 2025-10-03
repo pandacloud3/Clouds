@@ -25,6 +25,19 @@ MYSQL_ROOT_USER = "MYSQL_ROOT_USER"
 MYSQL_ROOT_PASSWORD = "MYSQL_ROOT_PASSWORD"
 pymysql.install_as_MySQLdb()
 
+from flask import Flask
+from my_project.extensions import basic_auth
+
+def create_app():
+    app = Flask(__name__)
+    app.config['BASIC_AUTH_USERNAME'] = 'admin'
+    app.config['BASIC_AUTH_PASSWORD'] = '1234'
+    app.config['BASIC_AUTH_FORCE'] = False
+
+    basic_auth.init_app(app)
+    return app
+
+
 # Database
 db = SQLAlchemy()
 
