@@ -28,6 +28,7 @@ ADDITIONAL_CONFIG = "ADDITIONAL_CONFIG"
 #     app.register_blueprint(noname_animator_controller)
 #     app.register_blueprint(mmas_controller)
 #     app.register_blueprint(animator_distribute_controller)
+#test
 
 if __name__ == '__main__':
     app = create_app()
