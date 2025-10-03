@@ -2,11 +2,13 @@ from http import HTTPStatus
 from flask import Blueprint, jsonify, Response, request, make_response
 from my_project.auth.controller import location_controller
 from my_project.auth.domain.orders.Location import Location
+from flask_basicauth import BasicAuth
 
 location_bp = Blueprint('locations', __name__, url_prefix='/locations')
 
 
 @location_bp.get('')
+@basic_auth.required
 def get_all_locations() -> Response:
     """
     Get all locations
