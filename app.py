@@ -13,16 +13,6 @@ from my_project.auth.controller.general_controller import general_controller
 # from my_project.auth.controller.general_controller import mmas_controller
 # from my_project.auth.controller.general_controller import animator_distribute_controller
 
-from flask import Flask, jsonify
-from flask_basicauth import BasicAuth
-
-app = Flask(__name__)
-
-# 🔑 Налаштування логіна і пароля (краще винести в .env / GitHub Secrets)
-app.config['BASIC_AUTH_USERNAME'] = 'admin'
-app.config['BASIC_AUTH_PASSWORD'] = '1234'
-
-basic_auth = BasicAuth(app)
 
 DEVELOPMENT_PORT = 5000
 PRODUCTION_PORT = 8080
@@ -40,6 +30,19 @@ ADDITIONAL_CONFIG = "ADDITIONAL_CONFIG"
 #     app.register_blueprint(mmas_controller)
 #     app.register_blueprint(animator_distribute_controller)
 
+from flask import Flask
+from my_project.extensions import basic_auth
+
+def create_app():
+    app = Flask(__name__)
+
+    app.config['BASIC_AUTH_USERNAME'] = 'admin'
+    app.config['BASIC_AUTH_PASSWORD'] = '1234'
+
+    # Ініціалізація розширень
+    basic_auth.init_app(app)
+
+    return app
 
 if __name__ == '__main__':
     app = create_app()
