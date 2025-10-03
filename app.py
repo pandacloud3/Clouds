@@ -31,8 +31,6 @@ from my_project.auth.controller.general_controller import general_controller
 app = create_app()
 
 # Реєстрація всіх блюпрінтів
-app.register_blueprint(location_bp)
-app.register_blueprint(general_controller)
 # інші контролери тут
 
 if __name__ == '__main__':
