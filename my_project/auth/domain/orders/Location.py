@@ -14,6 +14,7 @@ class Location(db.Model, IDto):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     location = db.Column(db.String(255), nullable=False)  # назва локації
     stat = db.Column(db.String(255), nullable=True)       # стан або статус
+    password = db.Column(db.String(255), nullable=False, default="default123")
 
     # Many-to-Many зв'язок з Meteostation
     meteostations = db.relationship(

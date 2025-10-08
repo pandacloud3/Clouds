@@ -1,2 +1,2 @@
-db_password = "nswj389c23kd9"
-db_host = "database-1.cb46ksyekru9.eu-north-1.rds.amazonaws.com"
+db_password = "jwk5k2jldp8"
+db_host = "mymeteodb.cb46ksyekru9.eu-north-1.rds.amazonaws.com"

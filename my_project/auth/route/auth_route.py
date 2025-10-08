@@ -38,7 +38,7 @@ def login() -> Response:
         description: Invalid credentials
     """
     data = request.get_json()
-    loc = Location.query.filter_by(name=data["name"]).first()
+    loc = Location.query.filter_by(location=data["name"]).first()
 
     if loc and getattr(loc, "password", None) == data["password"]:
         token = create_access_token(identity=str(loc.id))
