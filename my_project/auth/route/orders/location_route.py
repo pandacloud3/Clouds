@@ -4,20 +4,27 @@ from my_project.auth.controller import location_controller
 from my_project.auth.domain.orders.Location import Location
 from flask_jwt_extended import jwt_required
 
-location_bp = Blueprint('locations', __name__, url_prefix='/locations')
+location_bp = Blueprint('location', __name__, url_prefix='/locations')
 
 
-@location_bp.get('')
+@location_bp.route('', methods=['GET'])
 @jwt_required()
 def get_all_locations() -> Response:
     """
-    Get all locations
+    Get all Locations
     ---
     tags:
-      - Locations
+      - Location
+    parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+        description: JWT token
+        example: "Bearer <your_jwt_token>"
     responses:
       200:
-        description: A list of all locations
+        description: List of all locations
         schema:
           type: array
           items:
@@ -25,63 +32,114 @@ def get_all_locations() -> Response:
             properties:
               id:
                 type: integer
+                example: 1
               location:
                 type: string
+                example: "Lviv"
               stat:
                 type: string
+                example: "active"
     """
-    locations_dto = location_controller.find_all()  # вже DTO
-    return make_response(jsonify(locations_dto), HTTPStatus.OK)
+    locations = location_controller.find_all()
+    location_dto = [loc.put_into_dto() for loc in locations]
+    return make_response(jsonify(location_dto), HTTPStatus.OK)
 
 
-@location_bp.post('')
+@location_bp.route('', methods=['POST'])
 @jwt_required()
 def create_location() -> Response:
     """
-    Create a new location
+    Create a new Location
     ---
     tags:
-      - Locations
+      - Location
     parameters:
-      - in: body
-        name: body
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+        description: JWT token
+        example: "Bearer <your_jwt_token>"
+      - name: body
+        in: body
         required: true
         schema:
           type: object
+          required:
+            - location
+            - stat
           properties:
             location:
               type: string
+              example: "Kyiv"
             stat:
               type: string
+              example: "active"
     responses:
       201:
-        description: Location created
+        description: Location created successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 2
+            location:
+              type: string
+              example: "Kyiv"
+            stat:
+              type: string
+              example: "active"
     """
     content = request.get_json()
     loc = Location.create_from_dto(content)
-    dto = location_controller.create(loc)
-    return make_response(jsonify(dto), HTTPStatus.CREATED)
+    location_controller.create(loc)
+    return make_response(jsonify(loc.put_into_dto()), HTTPStatus.CREATED)
 
 
-@location_bp.get('/<int:location_id>')
+@location_bp.route('/<int:location_id>', methods=['GET'])
 @jwt_required()
-def get_location(location_id: int) -> Response:
+def get_location_by_id(location_id: int) -> Response:
     """
-    Get a location by ID
+    Get Location by ID
     ---
     tags:
-      - Locations
+      - Location
     parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+        description: JWT token
+        example: "Bearer <your_jwt_token>"
       - name: location_id
         in: path
-        type: integer
         required: true
-        description: ID of the location
+        type: integer
+        example: 1
     responses:
       200:
         description: Location found
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            location:
+              type: string
+              example: "Lviv"
+            stat:
+              type: string
+              example: "active"
       404:
         description: Location not found
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "Location not found"
     """
     loc = location_controller.find_by_id(location_id)
     if loc:
@@ -89,33 +147,47 @@ def get_location(location_id: int) -> Response:
     return make_response(jsonify({"error": "Location not found"}), HTTPStatus.NOT_FOUND)
 
 
-@location_bp.put('/<int:location_id>')
+@location_bp.route('/<int:location_id>', methods=['PUT'])
 @jwt_required()
 def update_location(location_id: int) -> Response:
     """
-    Update a location by ID
+    Update Location by ID
     ---
     tags:
-      - Locations
+      - Location
     parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+        description: JWT token
+        example: "Bearer <your_jwt_token>"
       - name: location_id
         in: path
-        type: integer
         required: true
-        description: ID of the location
-      - in: body
-        name: body
+        type: integer
+        example: 1
+      - name: body
+        in: body
         required: true
         schema:
           type: object
+          required:
+            - location
+            - stat
           properties:
             location:
               type: string
+              example: "Kharkiv"
             stat:
               type: string
+              example: "inactive"
     responses:
       200:
-        description: Location updated
+        description: Location updated successfully
+        schema:
+          type: string
+          example: "Location updated"
     """
     content = request.get_json()
     loc = Location.create_from_dto(content)
@@ -123,45 +195,60 @@ def update_location(location_id: int) -> Response:
     return make_response("Location updated", HTTPStatus.OK)
 
 
-@location_bp.delete('/<int:location_id>')
+@location_bp.route('/<int:location_id>', methods=['DELETE'])
 @jwt_required()
 def delete_location(location_id: int) -> Response:
     """
-    Delete a location by ID
+    Delete Location by ID
     ---
     tags:
-      - Locations
+      - Location
     parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+        description: JWT token
+        example: "Bearer <your_jwt_token>"
       - name: location_id
         in: path
-        type: integer
         required: true
-        description: ID of the location
+        type: integer
+        example: 1
     responses:
       204:
-        description: Location deleted
+        description: Location deleted successfully
+        schema:
+          type: string
+          example: "Location deleted"
     """
     location_controller.delete(location_id)
     return make_response("Location deleted", HTTPStatus.NO_CONTENT)
 
 
-@location_bp.get('/name/<string:name>')
+@location_bp.route('/name/<string:name>', methods=['GET'])
 @jwt_required()
-def get_locations_by_name(name: str) -> Response:
+def get_location_by_name(name: str) -> Response:
     """
-    Get locations by name
+    Get Locations by name
     ---
     tags:
-      - Locations
+      - Location
     parameters:
-      - name: name
-        in: path
+      - name: Authorization
+        in: header
         type: string
         required: true
-        description: Location name
+        description: JWT token
+        example: "Bearer <your_jwt_token>"
+      - name: name
+        in: path
+        required: true
+        type: string
+        example: "Lviv"
     responses:
       200:
-        description: List of locations with the given name
+        description: List of locations found by name
         schema:
           type: array
           items:
@@ -169,10 +256,14 @@ def get_locations_by_name(name: str) -> Response:
             properties:
               id:
                 type: integer
+                example: 1
               location:
                 type: string
+                example: "Lviv"
               stat:
                 type: string
+                example: "active"
     """
     locations = location_controller.find_by_name(name)
-    return make_response(jsonify([loc.put_into_dto() for loc in locations]), HTTPStatus.OK)
+    location_dto = [loc.put_into_dto() for loc in locations]
+    return make_response(jsonify(location_dto), HTTPStatus.OK)
