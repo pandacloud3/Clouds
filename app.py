@@ -1,5 +1,5 @@
-import pymysql
-pymysql.install_as_MySQLdb()
+# import pymysql
+# pymysql.install_as_MySQLdb()             /////////////////////
 
 import os
 from waitress import serve
@@ -14,13 +14,13 @@ from my_project.auth.controller.general_controller import general_controller
 # from my_project.auth.controller.general_controller import animator_distribute_controller
 
 
-DEVELOPMENT_PORT = 5000
-PRODUCTION_PORT = 8080
-HOST = "0.0.0.0"
-DEVELOPMENT = "development"
-PRODUCTION = "production"
-FLASK_ENV = "FLASK_ENV"
-ADDITIONAL_CONFIG = "ADDITIONAL_CONFIG"
+# DEVELOPMENT_PORT = 5000
+# PRODUCTION_PORT = 8080
+# HOST = "0.0.0.0"
+# DEVELOPMENT = "development"
+# PRODUCTION = "production"                           /////////
+# FLASK_ENV = "FLASK_ENV"
+# ADDITIONAL_CONFIG = "ADDITIONAL_CONFIG"
 
 
 # def register_blueprints(app):
@@ -31,9 +31,9 @@ ADDITIONAL_CONFIG = "ADDITIONAL_CONFIG"
 #     app.register_blueprint(animator_distribute_controller)
 
 
-if __name__ == '__main__':
-    app = create_app()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+# if __name__ == '__main__':                         //////////
+#     app = create_app()
+#     app.run(host="0.0.0.0", port=5000, debug=True)
 
 
     # flask_env = os.environ.get(FLASK_ENV, DEVELOPMENT).lower()
@@ -57,3 +57,42 @@ if __name__ == '__main__':
     #
     #     else:
     #         raise ValueError(f"Check OS environment variable '{FLASK_ENV}'")
+from flask import Flask
+from flask_jwt_extended import JWTManager
+from flasgger import Swagger
+from my_project.auth.route.orders.location_route import location_bp
+from my_project.auth.route.auth_route import auth_bp
+
+app = Flask(__name__)
+
+# 🔐 JWT конфігурація
+app.config["JWT_SECRET_KEY"] = "supersecretkey"  # зміни на власний секрет
+jwt = JWTManager(app)
+
+# 🔧 Swagger конфігурація з авторизацією
+swagger_template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "A swagger API",
+        "description": "API з JWT авторизацією",
+        "version": "1.0.0"
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT Authorization header. Example: 'Bearer {token}'"
+        }
+    },
+    "security": [{"Bearer": []}]
+}
+
+swagger = Swagger(app, template=swagger_template)
+
+# 📦 Підключаємо Blueprint-и
+app.register_blueprint(location_bp)
+app.register_blueprint(auth_bp)
+
+if __name__ == "__main__":
+    app.run(debug=True)
