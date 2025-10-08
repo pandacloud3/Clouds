@@ -2,11 +2,13 @@ from http import HTTPStatus
 from flask import Blueprint, jsonify, Response, request, make_response
 from my_project.auth.controller import location_controller
 from my_project.auth.domain.orders.Location import Location
+from flask_jwt_extended import jwt_required
 
 location_bp = Blueprint('locations', __name__, url_prefix='/locations')
 
 
 @location_bp.get('')
+@jwt_required()
 def get_all_locations() -> Response:
     """
     Get all locations
@@ -61,6 +63,7 @@ def create_location() -> Response:
 
 
 @location_bp.get('/<int:location_id>')
+@jwt_required()
 def get_location(location_id: int) -> Response:
     """
     Get a location by ID
@@ -86,6 +89,7 @@ def get_location(location_id: int) -> Response:
 
 
 @location_bp.put('/<int:location_id>')
+@jwt_required()
 def update_location(location_id: int) -> Response:
     """
     Update a location by ID
@@ -119,6 +123,7 @@ def update_location(location_id: int) -> Response:
 
 
 @location_bp.delete('/<int:location_id>')
+@jwt_required()
 def delete_location(location_id: int) -> Response:
     """
     Delete a location by ID
@@ -140,6 +145,7 @@ def delete_location(location_id: int) -> Response:
 
 
 @location_bp.get('/name/<string:name>')
+@jwt_required()
 def get_locations_by_name(name: str) -> Response:
     """
     Get locations by name

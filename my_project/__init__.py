@@ -4,59 +4,56 @@ apavelchak@gmail.com
 © Andrii Pavelchak
 """
 
+import pymysql
+from flasgger import Swagger
 from config import Config
-
-import os
-from http import HTTPStatus
-import secrets
-from typing import Dict, Any
-
 from flask import Flask
-from flask_restx import Api, Resource
+from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database
-from flasgger import Swagger
 
 from my_project.auth.route import register_routes
-import pymysql
+
+# Константи (якщо не задаються у Config)
 SECRET_KEY = "SECRET_KEY"
 SQLALCHEMY_DATABASE_URI = "SQLALCHEMY_DATABASE_URI"
 MYSQL_ROOT_USER = "MYSQL_ROOT_USER"
 MYSQL_ROOT_PASSWORD = "MYSQL_ROOT_PASSWORD"
-pymysql.install_as_MySQLdb()
 
 # Database
 db = SQLAlchemy()
+pymysql.install_as_MySQLdb()
 
 todos = {}
 
 
 def create_app() -> Flask:
     """
-    Creates Flask application
-    :param app_config: Flask configuration
-    :param additional_config: additional configuration
-    :return: Flask application object
+    Створює Flask-застосунок,
+    підключає Swagger, JWT та базу даних.
     """
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    # Ініціалізація JWT
+    jwt = JWTManager(app)
+
+    # Swagger для документації
     swagger = Swagger(app)
 
+    # Ініціалізація бази даних
     _init_db(app)
-    register_routes(app)
 
+    # Реєстрація маршрутів
+    register_routes(app)
 
     return app
 
 
-
-
-
 def _init_db(app: Flask) -> None:
     """
-    Initializes DB with SQLAlchemy
-    :param app: Flask application object
+    Ініціалізація бази даних через SQLAlchemy.
+    Якщо БД ще не створена — створює її.
     """
     db.init_app(app)
 
@@ -66,4 +63,3 @@ def _init_db(app: Flask) -> None:
     import my_project.auth.domain
     with app.app_context():
         db.create_all()
-
