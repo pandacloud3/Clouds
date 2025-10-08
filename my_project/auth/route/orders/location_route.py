@@ -35,6 +35,7 @@ def get_all_locations() -> Response:
 
 
 @location_bp.post('')
+@jwt_required()
 def create_location() -> Response:
     """
     Create a new location
