@@ -44,6 +44,11 @@ def create_app() -> Flask:
     # Ініціалізація бази даних
     _init_db(app)
 
+    from flask_migrate import Migrate
+
+    # Після ініціалізації бази
+    migrate = Migrate(app, db)
+
     # Реєстрація маршрутів
     register_routes(app)
 
