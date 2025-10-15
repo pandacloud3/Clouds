@@ -46,7 +46,6 @@ def get_all_locations() -> Response:
 
 
 @location_bp.route('', methods=['POST'])
-@jwt_required()
 def create_location() -> Response:
     """
     Create a new Location
@@ -54,12 +53,6 @@ def create_location() -> Response:
     tags:
       - Location
     parameters:
-      - name: Authorization
-        in: header
-        type: string
-        required: true
-        description: JWT token
-        example: "Bearer <your_jwt_token>"
       - name: body
         in: body
         required: true
