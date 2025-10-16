@@ -17,10 +17,10 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
             "schema": {
                 "type": "object",
                 "properties": {
-                    "name": {"type": "string", "example": "Lviv"},
+                    "location": {"type": "string", "example": "Lviv"},
                     "password": {"type": "string", "example": "password123"}
                 },
-                "required": ["name", "password"]
+                "required": ["location", "password"]
             }
         }
     ],
@@ -39,7 +39,7 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 })
 def login():
     data = request.get_json()
-    loc = Location.query.filter_by(location=data["name"]).first()
+    loc = Location.query.filter_by(location=data["location"]).first()
     if loc and getattr(loc, "password", None) == data["password"]:
         token = create_access_token(identity=str(loc.id))
         return make_response(jsonify({"access_token": token}), HTTPStatus.OK)
