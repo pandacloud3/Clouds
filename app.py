@@ -5,7 +5,7 @@ import os
 from waitress import serve
 import yaml
 from flask import Flask
-from my_project import create_app
+# from my_project import create_app
 from my_project.auth.controller.general_controller import general_controller
 # from my_project.auth.service.general_service import insert_data
 # from my_project.auth.controller.general_controller import animator_controller
@@ -57,60 +57,68 @@ from my_project.auth.controller.general_controller import general_controller
     #
     #     else:
     #         raise ValueError(f"Check OS environment variable '{FLASK_ENV}'")
-from flask import Flask
-from flask_jwt_extended import JWTManager
-from flasgger import Swagger
-from my_project.auth.route.orders.location_route import location_bp
-from my_project.auth.route.auth_route import auth_bp
-
-app = Flask(__name__)
-
-# 🔐 JWT конфігурація
-app.config["JWT_SECRET_KEY"] = "supersecretkey"  # зміни на власний секрет
-jwt = JWTManager(app)
-
-# 🔧 Swagger конфігурація з авторизацією
-swagger_template = {
-    "swagger": "2.0",
-    "info": {
-        "title": "A swagger API",
-        "description": "API з JWT авторизацією",
-        "version": "1.0.0"
-    },
-    "securityDefinitions": {
-        "Bearer": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header",
-            "description": "JWT Authorization header. Example: 'Bearer {token}'"
-        }
-    },
-    "security": [{"Bearer": []}]
-}
-
-# swagger_config = {
-#     "headers": [],
-#     "specs": [
-#         {
-#             "endpoint": 'apispec_1',
-#             "route": '/apispec_1.json',
-#             "rule_filter": lambda rule: True,
-#             "model_filter": lambda tag: True,
+# from flask import Flask
+# from flask_jwt_extended import JWTManager
+# from flasgger import Swagger
+# from my_project.auth.route.orders.location_route import location_bp
+# from my_project.auth.route.auth_route import auth_bp
+#
+# app = Flask(__name__)
+#
+# # 🔐 JWT конфігурація
+# app.config["JWT_SECRET_KEY"] = "supersecretkey"  # зміни на власний секрет
+# jwt = JWTManager(app)
+#
+# # 🔧 Swagger конфігурація з авторизацією
+# swagger_template = {
+#     "swagger": "2.0",
+#     "info": {
+#         "title": "A swagger API",
+#         "description": "API з JWT авторизацією",
+#         "version": "1.0.0"
+#     },
+#     "securityDefinitions": {
+#         "Bearer": {
+#             "type": "apiKey",
+#             "name": "Authorization",
+#             "in": "header",
+#             "description": "JWT Authorization header. Example: 'Bearer {token}'"
 #         }
-#     ],
-#     "static_url_path": "/flasgger_static",
-#     "swagger_ui": True,
-#     "specs_route": "/apidocs/"
+#     },
+#     "security": [{"Bearer": []}]
 # }
+#
+# # swagger_config = {
+# #     "headers": [],
+# #     "specs": [
+# #         {
+# #             "endpoint": 'apispec_1',
+# #             "route": '/apispec_1.json',
+# #             "rule_filter": lambda rule: True,
+# #             "model_filter": lambda tag: True,
+# #         }
+# #     ],
+# #     "static_url_path": "/flasgger_static",
+# #     "swagger_ui": True,
+# #     "specs_route": "/apidocs/"
+# # }
+#
+# #swagger = Swagger(app, template=swagger_template, config=swagger_config)
+#
+# swagger = Swagger(app, template=swagger_template)
+#
+# # 📦 Підключаємо Blueprint-и
+# app.register_blueprint(location_bp)
+# app.register_blueprint(auth_bp)
+#
+# if __name__ == "__main__":
+#     app.run(host="0.0.0.0", port=5000, debug=True)
+#     #app.run(debug=True)
 
-#swagger = Swagger(app, template=swagger_template, config=swagger_config)
+from my_project import create_app
 
-swagger = Swagger(app, template=swagger_template)
-
-# 📦 Підключаємо Blueprint-и
-app.register_blueprint(location_bp)
-app.register_blueprint(auth_bp)
+app = create_app()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-    #app.run(debug=True)
+
