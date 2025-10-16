@@ -31,6 +31,7 @@ class Location(db.Model, IDto):
             "id": self.id,
             "location": self.location,
             "stat": self.stat,
+            "password": self.password
         }
 
     @staticmethod
