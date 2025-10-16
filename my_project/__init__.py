@@ -53,9 +53,9 @@ def create_app() -> Flask:
     # 4️⃣ Ініціалізація БД
     _init_db(app)
 
-    # 5️⃣ Міграції (опціонально)
-    from flask_migrate import Migrate
-    Migrate(app, db)
+    # # 5️⃣ Міграції (опціонально)
+    # from flask_migrate import Migrate
+    # Migrate(app, db)
 
     # 6️⃣ Реєстрація маршрутів
     register_routes(app)

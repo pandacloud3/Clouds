@@ -30,6 +30,8 @@ def register_routes(app: Flask) -> None:
     from .orders.service_work_route import service_work_bp
     from .orders.type_work_route import type_work_bp
 
+    from my_project.auth.route.auth_route import login
+    from my_project.auth.route.auth_route import auth_bp
 
     app.register_blueprint(meteostation_bp)
     app.register_blueprint(meteostation_location_bp)
@@ -43,3 +45,5 @@ def register_routes(app: Flask) -> None:
     app.register_blueprint(producer_bp)
     app.register_blueprint(service_work_bp)
     app.register_blueprint(type_work_bp)
+
+    app.register_blueprint(auth_bp)
