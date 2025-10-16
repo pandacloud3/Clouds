@@ -14,11 +14,11 @@ from sqlalchemy_utils import database_exists, create_database
 
 from my_project.auth.route import register_routes
 
-# Константи (якщо не задаються у Config)
-SECRET_KEY = "SECRET_KEY"
-SQLALCHEMY_DATABASE_URI = "SQLALCHEMY_DATABASE_URI"
-MYSQL_ROOT_USER = "MYSQL_ROOT_USER"
-MYSQL_ROOT_PASSWORD = "MYSQL_ROOT_PASSWORD"
+# # Константи (якщо не задаються у Config)
+# SECRET_KEY = "SECRET_KEY"
+# SQLALCHEMY_DATABASE_URI = "SQLALCHEMY_DATABASE_URI"
+# MYSQL_ROOT_USER = "MYSQL_ROOT_USER"
+# MYSQL_ROOT_PASSWORD = "MYSQL_ROOT_PASSWORD"
 
 # Database
 db = SQLAlchemy()
@@ -55,6 +55,20 @@ def create_app() -> Flask:
     return app
 
 
+# def _init_db(app: Flask) -> None:
+#     """
+#     Ініціалізація бази даних через SQLAlchemy.
+#     Якщо БД ще не створена — створює її.
+#     """
+#     db.init_app(app)
+#
+#     if not database_exists(app.config[SQLALCHEMY_DATABASE_URI]):
+#         create_database(app.config[SQLALCHEMY_DATABASE_URI])
+#
+#     import my_project.auth.domain
+#     with app.app_context():
+#         db.create_all()
+
 def _init_db(app: Flask) -> None:
     """
     Ініціалізація бази даних через SQLAlchemy.
@@ -62,9 +76,18 @@ def _init_db(app: Flask) -> None:
     """
     db.init_app(app)
 
-    if not database_exists(app.config[SQLALCHEMY_DATABASE_URI]):
-        create_database(app.config[SQLALCHEMY_DATABASE_URI])
+    from sqlalchemy_utils import database_exists, create_database
 
+    # Правильний ключ для доступу до URI
+    database_uri = app.config['SQLALCHEMY_DATABASE_URI']
+
+    # Створюємо базу, якщо не існує
+    if not database_exists(database_uri):
+        create_database(database_uri)
+
+    # Імпорт моделей
     import my_project.auth.domain
+
+    # Створюємо таблиці
     with app.app_context():
         db.create_all()
