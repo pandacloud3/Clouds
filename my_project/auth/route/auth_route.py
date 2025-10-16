@@ -37,13 +37,9 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
         404: {"description": "Invalid credentials"}
     }
 })
-@auth_bp.post("/login")
 def login():
     data = request.get_json()
-    print("Got data:", data)  # 🧠 Перевіряємо, що саме приходить із Swagger
     loc = Location.query.filter_by(location=data["location"]).first()
-    print("Found in DB:", loc)  # 🧠 Перевіряємо, чи щось знайшлося
-
     if loc and getattr(loc, "password", None) == data["password"]:
         token = create_access_token(identity=str(loc.id))
         return make_response(jsonify({"access_token": token}), HTTPStatus.OK)
