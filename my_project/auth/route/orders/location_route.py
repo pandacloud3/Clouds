@@ -45,7 +45,52 @@ def get_all_locations() -> Response:
     return make_response(jsonify(location_dto), HTTPStatus.OK)
 
 
+# @location_bp.route('', methods=['POST'])
+# def create_location() -> Response:
+#     """
+#     Create a new Location
+#     ---
+#     tags:
+#       - Location
+#     parameters:
+#       - name: body
+#         in: body
+#         required: true
+#         schema:
+#           type: object
+#           required:
+#             - location
+#             - stat
+#           properties:
+#             location:
+#               type: string
+#               example: "Kyiv"
+#             stat:
+#               type: string
+#               example: "active"
+#     responses:
+#       201:
+#         description: Location created successfully
+#         schema:
+#           type: object
+#           properties:
+#             id:
+#               type: integer
+#               example: 2
+#             location:
+#               type: string
+#               example: "Kyiv"
+#             stat:
+#               type: string
+#               example: "active"
+#     """
+#     content = request.get_json()
+#     loc = Location.create_from_dto(content)
+#     location_controller.create(loc)
+#     return make_response(jsonify(loc.put_into_dto()), HTTPStatus.CREATED)
+
 @location_bp.route('', methods=['POST'])
+@jwt_required()  # захист JWT, якщо хочеш
 def create_location() -> Response:
     """
     Create a new Location
@@ -61,6 +106,7 @@ def create_location() -> Response:
           required:
             - location
             - stat
+            - password
           properties:
             location:
               type: string
@@ -68,6 +114,9 @@ def create_location() -> Response:
             stat:
               type: string
               example: "active"
+            password:
+              type: string
+              example: "password123"
     responses:
       201:
         description: Location created successfully
@@ -83,8 +132,18 @@ def create_location() -> Response:
             stat:
               type: string
               example: "active"
+            password:
+              type: string
+              example: "password123"
+    security:
+      - Bearer: []
     """
     content = request.get_json()
+
+    # Перевірка наявності всіх обов'язкових полів
+    if not all(k in content for k in ("location", "stat", "password")):
+        return make_response(jsonify({"message": "Missing required fields"}), HTTPStatus.BAD_REQUEST)
+
     loc = Location.create_from_dto(content)
     location_controller.create(loc)
     return make_response(jsonify(loc.put_into_dto()), HTTPStatus.CREATED)
