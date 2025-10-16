@@ -5,26 +5,18 @@ apavelchak@gmail.com
 """
 
 import pymysql
-from flasgger import Swagger
-from config import Config
 from flask import Flask
-from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database
+from flask_jwt_extended import JWTManager
+from flasgger import Swagger
 
+from config import Config
 from my_project.auth.route import register_routes
-
-# # Константи (якщо не задаються у Config)
-# SECRET_KEY = "SECRET_KEY"
-# SQLALCHEMY_DATABASE_URI = "SQLALCHEMY_DATABASE_URI"
-# MYSQL_ROOT_USER = "MYSQL_ROOT_USER"
-# MYSQL_ROOT_PASSWORD = "MYSQL_ROOT_PASSWORD"
 
 # Database
 db = SQLAlchemy()
 pymysql.install_as_MySQLdb()
-
-todos = {}
 
 
 def create_app() -> Flask:
@@ -35,50 +27,36 @@ def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # Ініціалізація JWT
-    jwt = JWTManager(app)
+    # 1️⃣ Ініціалізація SQLAlchemy
+    db.init_app(app)
 
-    # Swagger для документації
-    swagger = Swagger(app)
+    # 2️⃣ Ініціалізація JWT
+    JWTManager(app)
 
-    # Ініціалізація бази даних
+    # 3️⃣ Swagger для документації
+    Swagger(app)
+
+    # 4️⃣ Ініціалізація бази даних
     _init_db(app)
 
-    from flask_migrate import Migrate
+    
 
-    # Після ініціалізації бази
-    migrate = Migrate(app, db)
-
-    # Реєстрація маршрутів
+    # 6️⃣ Реєстрація маршрутів
     register_routes(app)
+
+    # 7️⃣ Додаткові тригери, функції, процедури (розкоментуй якщо потрібно)
+    # create_triggers(app, db)
+    # create_functions(app, db)
+    # create_procedures(app, db)
 
     return app
 
-
-# def _init_db(app: Flask) -> None:
-#     """
-#     Ініціалізація бази даних через SQLAlchemy.
-#     Якщо БД ще не створена — створює її.
-#     """
-#     db.init_app(app)
-#
-#     if not database_exists(app.config[SQLALCHEMY_DATABASE_URI]):
-#         create_database(app.config[SQLALCHEMY_DATABASE_URI])
-#
-#     import my_project.auth.domain
-#     with app.app_context():
-#         db.create_all()
 
 def _init_db(app: Flask) -> None:
     """
     Ініціалізація бази даних через SQLAlchemy.
     Якщо БД ще не створена — створює її.
     """
-    db.init_app(app)
-
-    from sqlalchemy_utils import database_exists, create_database
-
-    # Правильний ключ для доступу до URI
     database_uri = app.config['SQLALCHEMY_DATABASE_URI']
 
     # Створюємо базу, якщо не існує
@@ -88,6 +66,6 @@ def _init_db(app: Flask) -> None:
     # Імпорт моделей
     import my_project.auth.domain
 
-    # Створюємо таблиці
+    # Створюємо таблиці в контексті додатку
     with app.app_context():
         db.create_all()
