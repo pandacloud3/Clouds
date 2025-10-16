@@ -42,8 +42,8 @@ def get_all_locations() -> Response:
                 example: "active"
     """
     locations = location_controller.find_all()
-    location_dto = [loc.put_into_dto() for loc in locations]
-    return make_response(jsonify(location_dto), HTTPStatus.OK)
+    # location_dto = [loc.put_into_dto() for loc in locations]
+    return make_response(jsonify(locations), HTTPStatus.OK)
 
 
 # @location_bp.route('', methods=['POST'])
