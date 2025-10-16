@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, Response, request, make_response
 from my_project.auth.controller import location_controller
 from my_project.auth.domain.orders.Location import Location
 from flask_jwt_extended import jwt_required
+from my_project import db
 
 location_bp = Blueprint('location', __name__, url_prefix='/locations')
 
@@ -146,6 +147,7 @@ def create_location() -> Response:
 
     loc = Location.create_from_dto(content)
     location_controller.create(loc)
+    db.session.commit()
     return make_response(jsonify(loc.put_into_dto()), HTTPStatus.CREATED)
 
 
