@@ -90,7 +90,7 @@ def get_all_locations() -> Response:
 #     return make_response(jsonify(loc.put_into_dto()), HTTPStatus.CREATED)
 
 @location_bp.route('', methods=['POST'])
-@jwt_required()  # захист JWT, якщо хочеш
+# @jwt_required()
 def create_location() -> Response:
     """
     Create a new Location
