@@ -1,8 +1,8 @@
-from http import HTTPStatus
+from flask import Blueprint, request, jsonify, make_response
 from flask_jwt_extended import create_access_token
-from flask import Blueprint, request, Response, make_response, jsonify
-from flasgger import swag_from
+from http import HTTPStatus
 from my_project.auth.domain.orders.Location import Location
+from flasgger import swag_from
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -30,22 +30,17 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
             "schema": {
                 "type": "object",
                 "properties": {
-                    "access_token": {"type": "string", "example": "<access_token>"}
+                    "access_token": {"type": "string", "example": "<JWT token>"}
                 }
             }
         },
         404: {"description": "Invalid credentials"}
     }
 })
-def login() -> Response:
-    """
-    Login to get JWT token
-    """
+def login():
     data = request.get_json()
     loc = Location.query.filter_by(location=data["name"]).first()
-
     if loc and getattr(loc, "password", None) == data["password"]:
         token = create_access_token(identity=str(loc.id))
         return make_response(jsonify({"access_token": token}), HTTPStatus.OK)
-
     return make_response(jsonify({"message": "Invalid name or password"}), HTTPStatus.NOT_FOUND)
