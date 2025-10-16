@@ -1,3 +1,8 @@
+"""
+my_project/__init__.py
+Повністю робочий init для Flask + SQLAlchemy + JWT + Swagger
+"""
+
 import pymysql
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -9,6 +14,7 @@ from config import Config
 from my_project.auth.route import register_routes
 # from my_project.additional_for_db.additional_for_db import create_triggers, create_procedures, create_functions
 
+# 🔧 Database
 db = SQLAlchemy()
 pymysql.install_as_MySQLdb()
 
@@ -17,13 +23,13 @@ def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # SQLAlchemy
+    # 1️⃣ SQLAlchemy
     db.init_app(app)
 
-    # JWT
+    # 2️⃣ JWT
     JWTManager(app)
 
-    # Swagger
+    # 3️⃣ Swagger
     swagger_template = {
         "swagger": "2.0",
         "info": {
@@ -39,21 +45,22 @@ def create_app() -> Flask:
                 "description": "JWT Authorization header. Example: 'Bearer {token}'"
             }
         },
+        # Глобально для всіх маршрутів
         "security": [{"Bearer": []}]
     }
     Swagger(app, template=swagger_template)
 
-    # Ініціалізація БД
+    # 4️⃣ Ініціалізація БД
     _init_db(app)
 
-    # Міграції (опціонально)
+    # 5️⃣ Міграції (опціонально)
     from flask_migrate import Migrate
     Migrate(app, db)
 
-    # Реєстрація маршрутів
+    # 6️⃣ Реєстрація маршрутів
     register_routes(app)
 
-    # Додаткові тригери / функції / процедури
+    # 7️⃣ Додаткові тригери / функції / процедури (якщо потрібно)
     # create_triggers(app, db)
     # create_functions(app, db)
     # create_procedures(app, db)
@@ -62,12 +69,19 @@ def create_app() -> Flask:
 
 
 def _init_db(app: Flask) -> None:
+    """
+    Ініціалізація бази даних через SQLAlchemy.
+    Якщо БД ще не створена — створює її.
+    """
     database_uri = app.config['SQLALCHEMY_DATABASE_URI']
 
+    # Створюємо базу, якщо не існує
     if not database_exists(database_uri):
         create_database(database_uri)
 
-    import my_project.auth.domain
+    # Імпорт моделей
+    import my_project.auth.domain  # тут твої моделі
 
+    # Створюємо таблиці
     with app.app_context():
         db.create_all()
