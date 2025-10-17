@@ -141,7 +141,6 @@ def create_location() -> Response:
     """
     content = request.get_json()
 
-    # Перевірка наявності всіх обов'язкових полів
     if not all(k in content for k in ("location", "stat", "password")):
         return make_response(jsonify({"message": "Missing required fields"}), HTTPStatus.BAD_REQUEST)
 
@@ -243,10 +242,20 @@ def update_location(location_id: int) -> Response:
           type: string
           example: "Location updated"
     """
+
+
     content = request.get_json()
-    loc = Location.create_from_dto(content)
-    location_controller.update(location_id, loc)
-    return make_response("Location updated", HTTPStatus.OK)
+
+    loc = location_controller.find_by_id(location_id)
+    if not loc:
+        return make_response(jsonify({"error": "Location not found"}), HTTPStatus.NOT_FOUND)
+
+    loc.location = content.get("location", loc.location)
+    loc.stat = content.get("stat", loc.stat)
+    loc.password = content.get("password", loc.password)
+
+    db.session.commit()
+    return make_response(jsonify(loc.put_into_dto()), HTTPStatus.OK)
 
 
 @location_bp.route('/<int:location_id>', methods=['DELETE'])
@@ -276,8 +285,13 @@ def delete_location(location_id: int) -> Response:
           type: string
           example: "Location deleted"
     """
-    location_controller.delete(location_id)
-    return make_response("Location deleted", HTTPStatus.NO_CONTENT)
+    loc = location_controller.find_by_id(location_id)
+    if not loc:
+        return make_response(jsonify({"error": "Location not found"}), HTTPStatus.NOT_FOUND)
+
+    db.session.delete(loc)
+    db.session.commit()
+    return make_response(jsonify({"message": "Location deleted"}), HTTPStatus.NO_CONTENT)
 
 
 @location_bp.route('/name/<string:name>', methods=['GET'])
