@@ -209,32 +209,25 @@ def update_location(location_id: int) -> Response:
     tags:
       - Location
     parameters:
-      - name: Authorization
-        in: header
-        type: string
-        required: true
-        description: JWT token
-        example: "Bearer <your_jwt_token>"
-      - name: location_id
-        in: path
-        required: true
-        type: integer
-        example: 1
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required:
-            - location
-            - stat
-          properties:
-            location:
-              type: string
-              example: "Kharkiv"
-            stat:
-              type: string
-              example: "inactive"
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - location
+        - stat
+        - password
+      properties:
+        location:
+          type: string
+          example: "Kharkiv"
+        stat:
+          type: string
+          example: "inactive"
+        password:
+          type: string
+          example: "newpassword123"
     responses:
       200:
         description: Location updated successfully
