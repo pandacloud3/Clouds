@@ -31,19 +31,14 @@ class GeneralController(ABC):
         return [x.put_into_dto() for x in self._service.find_all()]
 
     def find_by_id(self, key: int) -> object:
-        """
-        Gets object from database table by integer key using from Service layer.
-        :param key: integer key (surrogate primary key)
-        :return: DTO for search object
-        """
         obj = self._service.find_by_id(key)
         if obj is None:
             abort(HTTPStatus.NOT_FOUND)
-        return obj.put_into_dto()
+        return obj
 
     def create(self, obj):
         self._service.create(obj)
-        return obj.put_into_dto()  # повертаємо DTO, а не None
+        return obj.put_into_dto()  
 
     def create_all(self, obj_list: List[object]) -> List[object]:
         """
