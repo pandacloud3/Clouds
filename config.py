@@ -1,7 +1,7 @@
 from my import db_password, db_host
 
 class Config:
-    JWT_SECRET_KEY = "supersecretkey123"  # 🔑 додаємо сюди
+    JWT_SECRET_KEY = "supersecretkey123"  
     # JWT_TOKEN_LOCATION = ["headers"]
     # JWT_HEADER_NAME = "Authorization"
     # JWT_HEADER_TYPE = "Bearer"
