@@ -209,36 +209,63 @@ def update_location(location_id: int) -> Response:
     tags:
       - Location
     parameters:
-  - name: body
-    in: body
-    required: true
-    schema:
-      type: object
-      required:
-        - location
-        - stat
-        - password
-      properties:
-        location:
-          type: string
-          example: "Kharkiv"
-        stat:
-          type: string
-          example: "inactive"
-        password:
-          type: string
-          example: "newpassword123"
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+        description: JWT token
+        example: "Bearer <your_jwt_token>"
+      - name: location_id
+        in: path
+        required: true
+        type: integer
+        example: 1
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - location
+            - stat
+          properties:
+            location:
+              type: string
+              example: "Kharkiv"
+            stat:
+              type: string
+              example: "inactive"
+            password:
+              type: string
+              example: "newpassword123"
     responses:
       200:
         description: Location updated successfully
         schema:
-          type: string
-          example: "Location updated"
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            location:
+              type: string
+              example: "Kharkiv"
+            stat:
+              type: string
+              example: "inactive"
+            password:
+              type: string
+              example: "newpassword123"
+      404:
+        description: Location not found
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "Location not found"
     """
-
-
     content = request.get_json()
-
     loc = location_controller.find_by_id(location_id)
     if not loc:
         return make_response(jsonify({"error": "Location not found"}), HTTPStatus.NOT_FOUND)
@@ -275,17 +302,27 @@ def delete_location(location_id: int) -> Response:
       204:
         description: Location deleted successfully
         schema:
-          type: string
-          example: "Location deleted"
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Location deleted"
+      404:
+        description: Location not found
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "Location not found"
     """
     loc = location_controller.find_by_id(location_id)
     if not loc:
         return make_response(jsonify({"error": "Location not found"}), HTTPStatus.NOT_FOUND)
 
-    db.session.delete(loc)
+    location_controller.delete(location_id)
     db.session.commit()
     return make_response(jsonify({"message": "Location deleted"}), HTTPStatus.NO_CONTENT)
-
 
 @location_bp.route('/name/<string:name>', methods=['GET'])
 @jwt_required()
