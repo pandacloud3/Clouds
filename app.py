@@ -65,11 +65,11 @@ from my_project.auth.controller.general_controller import general_controller
 #
 # app = Flask(__name__)
 #
-# # 🔐 JWT конфігурація
+# #  JWT конфігурація
 # app.config["JWT_SECRET_KEY"] = "supersecretkey"  # зміни на власний секрет
 # jwt = JWTManager(app)
 #
-# # 🔧 Swagger конфігурація з авторизацією
+# #  Swagger конфігурація з авторизацією
 # swagger_template = {
 #     "swagger": "2.0",
 #     "info": {
@@ -106,8 +106,7 @@ from my_project.auth.controller.general_controller import general_controller
 # #swagger = Swagger(app, template=swagger_template, config=swagger_config)
 #
 # swagger = Swagger(app, template=swagger_template)
-#
-# # 📦 Підключаємо Blueprint-и
+
 # app.register_blueprint(location_bp)
 # app.register_blueprint(auth_bp)
 #
