@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 007777689786.dkr.ecr.eu-north-1.amazonaws.com
+
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t flask-rest-api .
+      - docker tag flask-rest-api:latest 007777689786.dkr.ecr.eu-north-1.amazonaws.com/flask-rest-api:latest
+
+  post_build:
+    commands:
+      - echo Pushing the Docker image to ECR...
+      - docker push 007777689786.dkr.ecr.eu-north-1.amazonaws.com/flask-rest-api:latest
