@@ -38,7 +38,7 @@ class GeneralController(ABC):
 
     def create(self, obj):
         self._service.create(obj)
-        return obj.put_into_dto()  
+        return obj.put_into_dto()
 
     def create_all(self, obj_list: List[object]) -> List[object]:
         """
