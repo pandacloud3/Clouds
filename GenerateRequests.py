@@ -2,10 +2,10 @@ import asyncio
 import aiohttp
 import time
 
-URL = "http://<PUBLIC_IP>:5000/your_endpoint"  # заміни на свій
+URL = "http://51.20.96.40:5000/apidocs/"
 
-NUM_REQUESTS = 5000        # загальна кількість запитів
-CONCURRENT_REQUESTS = 200   # скільки одночасних запитів йде
+NUM_REQUESTS = 5000
+CONCURRENT_REQUESTS = 200
 
 async def send_request(session, i):
     try:
@@ -21,7 +21,7 @@ async def main():
     async with aiohttp.ClientSession() as session:
         tasks = []
         for i in range(NUM_REQUESTS):
-            # обмежуємо одночасні запити через Semaphore
+
             async with semaphore:
                 tasks.append(asyncio.create_task(send_request(session, i)))
 
