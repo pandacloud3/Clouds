@@ -1,26 +1,33 @@
-import requests
-import threading
+import asyncio
+import aiohttp
 import time
 
-URL = "http://51.20.96.40:5000/apidocs/"
+URL = "http://<PUBLIC_IP>:5000/your_endpoint"  # заміни на свій
 
-NUM_THREADS = 20
-REQUESTS_PER_THREAD = 50
+NUM_REQUESTS = 5000        # загальна кількість запитів
+CONCURRENT_REQUESTS = 200   # скільки одночасних запитів йде
 
-def send_requests():
-    for _ in range(REQUESTS_PER_THREAD):
-        try:
-            response = requests.get(URL)
-            print(response.status_code)
-        except Exception as e:
-            print("Error:", e)
-        time.sleep(0.1)
+async def send_request(session, i):
+    try:
+        async with session.get(URL) as response:
+            status = response.status
+            print(f"Request {i}: {status}")
+    except Exception as e:
+        print(f"Request {i} failed: {e}")
 
-threads = []
-for _ in range(NUM_THREADS):
-    t = threading.Thread(target=send_requests)
-    t.start()
-    threads.append(t)
+async def main():
+    semaphore = asyncio.Semaphore(CONCURRENT_REQUESTS)
 
-for t in threads:
-    t.join()
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        for i in range(NUM_REQUESTS):
+            # обмежуємо одночасні запити через Semaphore
+            async with semaphore:
+                tasks.append(asyncio.create_task(send_request(session, i)))
+
+        await asyncio.gather(*tasks)
+
+if __name__ == "__main__":
+    start_time = time.time()
+    asyncio.run(main())
+    print(f"Completed in {time.time() - start_time:.2f} seconds")
