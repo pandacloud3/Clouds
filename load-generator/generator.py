@@ -1,34 +1,36 @@
-import requests
-import threading
-import time
+import aiohttp
+import asyncio
 import os
+import time
 
-TARGET_URL = os.getenv("TARGET_URL","http://51.20.96.40:5000/apidocs/")
+TARGET_URL = os.getenv("TARGET_URL", "http://51.20.96.40:5000/apidocs/")
 
-NUM_THREADS = 20
-REQUESTS_PER_THREAD = 10
+CONCURRENT_REQUESTS = 200
+TOTAL_REQUESTS = 1000
 
-def worker(thread_id):
-    for i in range(REQUESTS_PER_THREAD):
-        try:
-            response = requests.get(TARGET_URL)
-            if response.status_code != 200:
-                print(f"[{thread_id}] Error: {response.status_code}")
-        except Exception as e:
-            print(f"[{thread_id}] Exception: {e}")
+async def fetch(session, url, idx):
+    try:
+        async with session.get(url) as resp:
+            status = resp.status
+            if status != 200:
+                print(f"[{idx}] Error status: {status}")
+    except Exception as e:
+        print(f"[{idx}] Exception: {e}")
+
+async def run_load_test():
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        for i in range(TOTAL_REQUESTS):
+            tasks.append(fetch(session, TARGET_URL, i))
+            if len(tasks) >= CONCURRENT_REQUESTS:
+                await asyncio.gather(*tasks)
+                tasks = []
+        if tasks:
+            await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
     print(f"Starting load test to {TARGET_URL}")
-    start = time.time()
-
-    threads = []
-    for i in range(NUM_THREADS):
-        t = threading.Thread(target=worker, args=(i,))
-        t.start()
-        threads.append(t)
-
-    for t in threads:
-        t.join()
-
-    print(f"Finished in {time.time() - start:.2f}s")
-    print(f"Total requests sent: {NUM_THREADS * REQUESTS_PER_THREAD}")
+    start_time = time.time()
+    asyncio.run(run_load_test())
+    duration = time.time() - start_time
+    print(f"Finished load test in {duration:.2f} seconds")
