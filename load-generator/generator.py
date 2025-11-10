@@ -5,8 +5,8 @@ import os
 
 TARGET_URL = os.getenv("TARGET_URL","http://51.20.96.40:5000/apidocs/")
 
-NUM_THREADS = 600
-REQUESTS_PER_THREAD = 50
+NUM_THREADS = 20
+REQUESTS_PER_THREAD = 10
 
 def worker(thread_id):
     for i in range(REQUESTS_PER_THREAD):
