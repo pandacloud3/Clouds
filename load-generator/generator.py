@@ -1,28 +1,29 @@
-import aiohttp
-import asyncio
+import requests
+import threading
 import time
 import os
 
 TARGET_URL = os.getenv("TARGET_URL", "http://51.20.96.40:5000/apidocs/")
-NUM_REQUESTS = 5000
-CONCURRENCY = 100  
 
-async def make_request(session, sem):
-    async with sem:
-        try:
-            async with session.get(TARGET_URL) as resp:
-                await resp.text()
-        except Exception as e:
-            print(f"Request failed: {e}")
+NUM_THREADS = 600
+REQUESTS_PER_THREAD = 100
 
-async def stress_test():
-    sem = asyncio.Semaphore(CONCURRENCY)
-    async with aiohttp.ClientSession() as session:
-        tasks = [make_request(session, sem) for _ in range(NUM_REQUESTS)]
-        await asyncio.gather(*tasks)
+def send_requests(thread_id):
+    while True:
+        for _ in range(REQUESTS_PER_THREAD):
+            try:
+                response = requests.get(TARGET_URL)
+                if response.status_code != 200:
+                    print(f"[{thread_id}] Error: {response.status_code}")
+            except Exception as e:
+                print(f"[{thread_id}] Exception: {e}")
+            time.sleep(0.05)
 
-if __name__ == "__main__":
-    print(f"Starting load test to {TARGET_URL}")
-    start = time.time()
-    asyncio.run(stress_test())
-    print(f"Finished load test in {time.time() - start:.2f}s")
+threads = []
+for i in range(NUM_THREADS):
+    t = threading.Thread(target=send_requests, args=(i,))
+    t.start()
+    threads.append(t)
+
+for t in threads:
+    t.join()
