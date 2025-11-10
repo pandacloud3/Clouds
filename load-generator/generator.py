@@ -3,7 +3,7 @@ import threading
 import time
 import os
 
-TARGET_URL = os.getenv("http://51.20.96.40:5000/apidocs/")
+TARGET_URL = os.getenv("TARGET_URL","http://51.20.96.40:5000/apidocs/")
 
 NUM_THREADS = 600
 REQUESTS_PER_THREAD = 50
